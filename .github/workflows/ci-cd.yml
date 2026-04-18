@@ -184,7 +184,7 @@ jobs:
           MYSQL_USER: ${{ secrets.PROD_DB_USER }}
           MYSQL_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
           DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/carbontrack
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
           SPRING_PROFILES_ACTIVE: production
           APP_PORT: 80
 
