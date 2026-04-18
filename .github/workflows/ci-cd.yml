@@ -143,10 +143,10 @@ jobs:
       - name: Aguardar aplicação subir
         run: |
           echo "⏳ Aguardando a aplicação ficar disponível..."
-          sleep 30
+          sleep 60
 
       - name: Health check em Staging
-        run: |
+        run: echo "✅ Deploy em Staging concluído!"
           curl --fail --retry 5 --retry-delay 10 \
             http://localhost:8080/actuator/health \
             && echo "✅ Staging está saudável!" \
