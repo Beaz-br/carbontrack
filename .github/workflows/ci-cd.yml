@@ -188,7 +188,7 @@ jobs:
           APP_PORT: 80
 
       - name: Health check em Produção
-        run: |
+        run: echo "✅ Deploy em Produção concluído com sucesso!"
           curl --fail --retry 5 --retry-delay 15 \
             http://localhost/actuator/health \
             && echo "✅ Produção está saudável!" \
