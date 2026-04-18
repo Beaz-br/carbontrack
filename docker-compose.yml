@@ -1,0 +1,82 @@
+version: "3.9"
+
+# =============================================
+# CarbonTrack - Orquestração com Docker Compose
+# Inclui: App Spring Boot + MySQL
+# Ambientes: staging e produção (via perfis)
+# =============================================
+
+services:
+
+  # -------------------------------------------
+  # Banco de Dados MySQL
+  # -------------------------------------------
+  mysql-db:
+    image: mysql:8.0
+    container_name: carbontrack-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-carbontrack_db}
+      MYSQL_USER: ${MYSQL_USER:-carbontrack}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-carbon123}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - carbontrack-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root123}"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # -------------------------------------------
+  # Aplicação Spring Boot
+  # -------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: carbontrack-app
+    restart: unless-stopped
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/${MYSQL_DATABASE:-carbontrack_db}?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-carbontrack}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-carbon123}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-staging}
+      SERVER_PORT: 8080
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    networks:
+      - carbontrack-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+# -------------------------------------------
+# Volumes
+# -------------------------------------------
+volumes:
+  mysql-data:
+    driver: local
+
+# -------------------------------------------
+# Redes
+# -------------------------------------------
+networks:
+  carbontrack-net:
+    driver: bridge
