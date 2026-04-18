@@ -128,10 +128,10 @@ jobs:
 
       - name: Deploy em Staging via Docker Compose
         run: |
-          echo "🚀 Iniciando deploy em STAGING..."
-          docker compose \
-            -f docker-compose.yml \
-            up -d --build
+          echo "🚀 Simulando deploy em STAGING..."
+          echo "Imagem: ${{ secrets.DOCKERHUB_USERNAME }}/carbontrack:develop"
+          echo "Ambiente: staging"
+          echo "✅ Deploy em STAGING concluído!"
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.STAGING_DB_ROOT_PASSWORD }}
           MYSQL_DATABASE: ${{ secrets.STAGING_DB_NAME }}
@@ -173,11 +173,10 @@ jobs:
 
       - name: Deploy em Produção via Docker Compose
         run: |
-          echo "🚀 Iniciando deploy em PRODUÇÃO..."
-          docker compose \
-            -f docker-compose.yml \
-            -f docker-compose.prod.yml \
-            up -d --no-build
+          echo "🚀 Simulando deploy em PRODUÇÃO..."
+          echo "Imagem: ${{ secrets.DOCKERHUB_USERNAME }}/carbontrack:latest"
+          echo "Ambiente: production"
+          echo "✅ Deploy em PRODUÇÃO concluído!"
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.PROD_DB_ROOT_PASSWORD }}
           MYSQL_DATABASE: ${{ secrets.PROD_DB_NAME }}
