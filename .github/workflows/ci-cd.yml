@@ -59,14 +59,7 @@ jobs:
           SPRING_DATASOURCE_USERNAME: carbontrack
           SPRING_DATASOURCE_PASSWORD: carbon123
 
-      - name: Publicar relatório de testes
-        uses: dorny/test-reporter@v1
-        if: always()
-        with:
-          name: Resultado dos Testes
-          path: target/surefire-reports/*.xml
-          reporter: java-junit
-
+      
       - name: Gerar artefato JAR
         run: mvn package -DskipTests -B
 
