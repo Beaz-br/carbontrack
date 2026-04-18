@@ -1,10 +1,5 @@
 version: "3.9"
 
-# =============================================
-# Override de PRODUÇÃO
-# Uso: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
-# =============================================
-
 services:
   mysql-db:
     environment:
@@ -12,8 +7,6 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - mysql-data-prod:/var/lib/mysql
 
   app:
     image: ${DOCKER_IMAGE:-carbontrack}:${IMAGE_TAG:-latest}
@@ -22,11 +15,3 @@ services:
       SPRING_JPA_SHOW_SQL: "false"
     ports:
       - "80:8080"
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-
-volumes:
-  mysql-data-prod:
-    driver: local
