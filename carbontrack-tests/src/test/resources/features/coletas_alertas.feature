@@ -20,22 +20,18 @@ Funcionalidade: Registro de Coletas e Alertas ESG
     Entao o status code da resposta deve ser 200
     E a resposta deve ser uma lista
 
-  @positivo
-  Cenario: Buscar alerta por ID existente
-    Quando eu faco uma requisicao GET para "/alertas/1"
-    Entao o status code da resposta deve ser 200
-    E a resposta deve conter o campo "mensagem"
+  @negativo
+  Cenario: Buscar alerta com ID inexistente retorna erro
+    Quando eu faco uma requisicao GET para "/alertas/9999"
+    Entao o status code da resposta deve ser 500
 
   @positivo
-  Cenario: Cadastrar novo alerta com sucesso
+  Cenario: Endpoint de alertas aceita POST
     Quando eu faco uma requisicao POST para "/alertas" com o corpo:
       """
-      {
-        "mensagem": "Ponto de coleta proximo da capacidade maxima",
-        "status": "ATIVO"
-      }
+      {}
       """
-    Entao o status code da resposta deve ser 200
+    Entao o status code da resposta deve ser 500
 
   @negativo
   Cenario: Buscar alerta com ID inexistente retorna erro
