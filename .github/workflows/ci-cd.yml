@@ -69,7 +69,66 @@ jobs:
           name: carbontrack-jar
           path: target/*.jar
           retention-days: 5
+# ================================================
+  # JOB 1.5: TESTES BDD
+  # ================================================
+  testes-bdd:
+    name: Testes BDD - Cucumber
+    runs-on: ubuntu-latest
+    needs: build-and-test
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root123
+          MYSQL_DATABASE: carbontrack_db
+          MYSQL_USER: carbontrack
+          MYSQL_PASSWORD: carbon123
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: maven
+
+      - name: Build da aplicação principal
+        run: mvn clean package -DskipTests -B
+
+      - name: Iniciar aplicação
+        run: |
+          java -jar target/carbontrack-1.0-SNAPSHOT.jar &
+          echo "Aguardando aplicação subir..."
+          sleep 40
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/carbontrack_db?useSSL=false&allowPublicKeyRetrieval=true
+          SPRING_DATASOURCE_USERNAME: carbontrack
+          SPRING_DATASOURCE_PASSWORD: carbon123
+
+      - name: Executar testes BDD
+        run: |
+          cd carbontrack-tests
+          mvn test -Dapi.url=http://localhost:8080 -B
+
+      - name: Publicar relatório Cucumber
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cucumber-report
+          path: carbontrack-tests/target/cucumber-reports/
+          retention-days: 7
   # ================================================
   # JOB 2: BUILD DA IMAGEM DOCKER
   # ================================================

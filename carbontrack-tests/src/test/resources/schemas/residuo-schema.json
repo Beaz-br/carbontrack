@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Residuo",
+  "type": "object",
+  "required": ["id", "tipoResiduo", "descricao"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Identificador unico do residuo"
+    },
+    "tipoResiduo": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Tipo do residuo (Plastico, Vidro, Papel, etc)"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descricao detalhada do residuo"
+    }
+  },
+  "additionalProperties": false
+}

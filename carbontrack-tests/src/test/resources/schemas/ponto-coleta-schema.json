@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PontoColeta",
+  "type": "object",
+  "required": ["id", "localizacao", "capacidadeMaxima"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Identificador unico do ponto de coleta"
+    },
+    "localizacao": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Localizacao do ponto de coleta"
+    },
+    "capacidadeMaxima": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Capacidade maxima em kg do ponto"
+    },
+    "nivelAtual": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Nivel atual de residuos em kg"
+    }
+  },
+  "additionalProperties": false
+}
